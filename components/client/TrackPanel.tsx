@@ -1,37 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { normalizeKode } from "@/lib/validation";
-import { STATUS_BADGE, STATUS_LABEL } from "@/lib/constants";
-import type { AspirasiPublic } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
 import Button from "@/components/ui/Button";
+import { STATUS_BADGE, STATUS_LABEL } from "@/lib/constants";
+import { formatDate } from "@/lib/format";
+import type { HistoryItem } from "@/lib/history";
+import type { AspirasiPublic } from "@/lib/types";
+import { normalizeKode } from "@/lib/validation";
 
-function formatDate(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "-";
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
+const STEPS = ["Diterima", "Lagi dibaca", "Diproses", "Selesai"];
 
-export default function TrackPanel({ onClose }: { onClose: () => void }) {
-  const [kode, setKode] = useState("");
+const STATUS_STEP: Record<AspirasiPublic["status"], number> = {
+  baru: 0,
+  diproses: 2,
+  selesai: 3,
+  ditolak: 0,
+};
+
+const STATUS_HEADING: Record<AspirasiPublic["status"], string> = {
+  baru: "Diterima",
+  diproses: "Diproses",
+  selesai: "Selesai",
+  ditolak: "Gak dilanjut",
+};
+
+export default function TrackPanel({
+  onClose,
+  initialKode,
+  history,
+  onClearHistory,
+}: {
+  onClose: () => void;
+  initialKode?: string;
+  history: HistoryItem[];
+  onClearHistory: () => void;
+}) {
+  const [kode, setKode] = useState(initialKode ?? "");
   const [result, setResult] = useState<AspirasiPublic | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const autoRan = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-
-  async function handleCheck() {
-    const normalized = normalizeKode(kode);
+  async function checkCode(raw: string) {
+    const normalized = normalizeKode(raw);
     if (!normalized || normalized === "SV-") {
       setError("Isi kode tracking dulu ya.");
       setResult(null);
@@ -44,8 +56,9 @@ export default function TrackPanel({ onClose }: { onClose: () => void }) {
     try {
       const res = await fetch(
         `/api/aspirasi?kode=${encodeURIComponent(normalized)}`,
+        { cache: "no-store" },
       );
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error ?? "Kode tidak ditemukan. Cek lagi tulisannya ya.");
       } else {
@@ -58,97 +71,145 @@ export default function TrackPanel({ onClose }: { onClose: () => void }) {
     }
   }
 
-  return (
-    <div
-      className="track-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Cek status aspirasi"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <div className="track-card">
-        <div className="page-head" style={{ marginBottom: "0.25rem" }}>
-          <div>
-            <h2 className="track-title">Cek status</h2>
-            <p className="track-sub">
-              Masukin kode tracking yang kamu dapet setelah kirim pesan.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="paper-close"
-            onClick={onClose}
-            aria-label="Tutup"
-          >
-            ✕
-          </button>
-        </div>
+  useEffect(() => {
+    if (initialKode && !autoRan.current) {
+      autoRan.current = true;
+      void checkCode(initialKode);
+    }
+    // Cek otomatis cuma sekali saat layar dibuka dari riwayat/toast.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialKode]);
 
-        <div className="field">
-          <label className="label" htmlFor="kode">
-            Kode tracking
-          </label>
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (!initialKode) inputRef.current?.focus({ preventScroll: true });
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [initialKode]);
+
+  const step = result ? STATUS_STEP[result.status] : -1;
+
+  return (
+    <section className="screen status-screen" aria-label="Cek status aspirasi">
+      <div className="status-panel">
+        <h2 className="status-title">Cek status</h2>
+        <p className="status-hint">
+          Masukin kode yang kamu dapat setelah kirim pesan.
+        </p>
+
+        <form
+          className="status-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void checkCode(kode);
+          }}
+        >
           <input
-            id="kode"
-            className={`input${error ? " input-error" : ""}`}
+            ref={inputRef}
+            className="status-input"
             placeholder="SV-XXXX"
-            value={kode}
-            autoFocus
+            aria-label="Kode pelacakan"
             autoComplete="off"
+            maxLength={12}
+            value={kode}
             onChange={(event) => {
               setKode(event.target.value.toUpperCase());
               if (error) setError("");
             }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") handleCheck();
-            }}
           />
+          <Button type="submit" disabled={loading}>
+            Cek
+          </Button>
+        </form>
+
+        <div className="status-result" aria-live="polite">
+          {loading && <p className="status-loading">Lagi nyari...</p>}
+
+          {error && !loading && (
+            <div className="status-empty">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {result && !loading && (
+            <div className="status-card">
+              <div className="status-card-top">
+                <span className="status-code">{result.kode}</span>
+                <span className={`badge ${STATUS_BADGE[result.status]}`}>
+                  {STATUS_LABEL[result.status]}
+                </span>
+              </div>
+              <p className="status-stat">{STATUS_HEADING[result.status]}</p>
+              <p className="status-meta">
+                {formatDate(result.created_at)}
+                {result.topik ? ` · ${result.topik}` : ""}
+              </p>
+
+              <div
+                className="status-steps"
+                aria-label={`Progres: ${STEPS[step] ?? STEPS[0]}`}
+              >
+                {STEPS.map((label, index) => (
+                  <i
+                    key={label}
+                    className={index <= step ? "on" : ""}
+                    style={{ "--n": index } as React.CSSProperties}
+                    title={label}
+                  />
+                ))}
+              </div>
+              <div className="status-step-labels" aria-hidden="true">
+                <span>{STEPS[0]}</span>
+                <span>{STEPS[STEPS.length - 1]}</span>
+              </div>
+
+              {result.balasan ? (
+                <div className="status-reply">
+                  <span>BALASAN OSIS</span>
+                  <p>{result.balasan}</p>
+                </div>
+              ) : (
+                <p className="status-note">
+                  Belum ada balasan. Pesanmu udah dicatat sama OSIS.
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
-        <Button
-          className="btn-block"
-          onClick={handleCheck}
-          disabled={loading}
-        >
-          {loading ? "Ngecek..." : "Cek status"}
-        </Button>
-
-        {error && <div className="track-message error">{error}</div>}
-
-        {result && (
-          <div className="track-result">
-            <div className="track-result-top">
-              <div>
-                <div className="track-code">{result.kode}</div>
-                <div className="track-meta">
-                  {formatDate(result.created_at)}
-                  {result.topik ? ` · ${result.topik}` : ""}
-                </div>
-              </div>
-              <span className={`badge ${STATUS_BADGE[result.status]}`}>
-                {STATUS_LABEL[result.status]}
-              </span>
+        {history.length > 0 && (
+          <div className="status-history">
+            <div className="status-history-head">
+              <span>Kode kamu sebelumnya</span>
+              <button type="button" onClick={onClearHistory}>
+                Hapus
+              </button>
             </div>
-
-            {result.balasan ? (
-              <div className="reply-box">
-                <div className="reply-label">JAWABAN OSIS</div>
-                <div className="reply-text">{result.balasan}</div>
-              </div>
-            ) : (
-              <div className="track-body">
-                Belum ada balasan. Pesanmu udah dicatat sama OSIS.
-              </div>
-            )}
+            <div className="status-history-list">
+              {history.slice(0, 6).map((item) => (
+                <button
+                  type="button"
+                  key={item.kode}
+                  className="status-history-item"
+                  onClick={() => {
+                    setKode(item.kode);
+                    void checkCode(item.kode);
+                  }}
+                >
+                  <b>{item.kode}</b>
+                  <span>{formatDate(item.created_at)}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
-        <p className="track-hint">
-          Kode ini cuma buat kamu. Jangan dikasih ke orang lain ya.
-        </p>
+        <div className="status-back">
+          <Button variant="secondary" className="btn-line" onClick={onClose}>
+            Balik
+          </Button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

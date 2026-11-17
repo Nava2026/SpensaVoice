@@ -1,16 +1,11 @@
 import type { Status, Topik } from "./types";
 
-export const KELAS_OPTIONS = [
-  "VII A",
-  "VII B",
-  "VII C",
-  "VIII A",
-  "VIII B",
-  "VIII C",
-  "IX A",
-  "IX B",
-  "IX C",
-];
+const KELAS_TINGKAT = ["VII", "VIII", "IX"] as const;
+const KELAS_ROMBEL = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
+
+export const KELAS_OPTIONS = KELAS_TINGKAT.flatMap((tingkat) =>
+  KELAS_ROMBEL.map((rombel) => `${tingkat} ${rombel}`),
+);
 
 export const TOPIK_OPTIONS: Exclude<Topik, "">[] = [
   "Fasilitas",

@@ -1,36 +1,51 @@
-const CONFETTI = [
-  { cx: "-64px", cy: "-58px", color: "#60a5fa" },
-  { cx: "-30px", cy: "-80px", color: "#4ade80" },
-  { cx: "12px", cy: "-72px", color: "#fbbf24" },
-  { cx: "50px", cy: "-58px", color: "#f472b6" },
-  { cx: "74px", cy: "-26px", color: "#60a5fa" },
-  { cx: "-78px", cy: "-18px", color: "#38bdf8" },
-];
+const CONFETTI = Array.from({ length: 22 }, (_, index) => {
+  const angle = (index / 22) * Math.PI * 2 + Math.random() * 0.5;
+  const distance = 60 + Math.random() * 120;
+  return {
+    id: index,
+    color: ["#5B9DFF", "#9cc3ff", "#e8eefc", "#8fe3b8"][index % 4],
+    dx: `${Math.cos(angle) * distance}px`,
+    dy: `${Math.sin(angle) * distance - 60}px`,
+    delay: `${Math.random() * 0.12}s`,
+  };
+});
 
 export default function SendAnimation({ done }: { done: boolean }) {
   return (
-    <div className="sending" role="status" aria-live="polite">
-      <div className="sending-box" aria-hidden="true">
-        <div className="sending-lid" />
-        <div className="sending-body" />
-        <div className="sending-slot" />
-        <div className="sending-flash" />
-        <div className="sending-paper" />
+    <section
+      className={`screen send-screen${done ? " is-done" : ""}`}
+      aria-label="Mengirim pesan"
+      role="status"
+      aria-live="polite"
+    >
+      <div className="send-stage">
+        <div className="send-box">
+          <div className="send-box-back" />
+          <div className="send-flyer" />
+          <div className="send-box-front">SV</div>
+          <div className="send-box-lid" />
+        </div>
+
         {CONFETTI.map((piece) => (
           <span
-            key={piece.cx + piece.cy}
-            className="confetti"
-            style={{
-              background: piece.color,
-              ["--cx" as string]: piece.cx,
-              ["--cy" as string]: piece.cy,
-            }}
+            key={piece.id}
+            className="send-confetti"
+            style={
+              {
+                background: piece.color,
+                "--dx": piece.dx,
+                "--dy": piece.dy,
+                "--delay": piece.delay,
+              } as React.CSSProperties
+            }
           />
         ))}
       </div>
-      <div className={`sending-label${done ? " done" : ""}`}>
-        {done ? "MASUK ✓" : "LAGI DIKIRIM..."}
-      </div>
-    </div>
+
+      <p className="send-label">
+        {done ? "Masuk" : "Lagi dikirim"}
+        {!done && <span className="send-dots" aria-hidden="true" />}
+      </p>
+    </section>
   );
 }

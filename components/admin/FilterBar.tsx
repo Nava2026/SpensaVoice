@@ -1,7 +1,30 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import Select from "@/components/ui/Select";
 import { STATUS_LABEL, STATUS_OPTIONS, TOPIK_OPTIONS } from "@/lib/constants";
 import { filtersToQuery } from "@/lib/filters";
 import type { AspirasiFilters } from "@/lib/types";
+
+const STATUS_FILTER_OPTIONS = [
+  { value: "", label: "Semua status" },
+  ...STATUS_OPTIONS.map((status) => ({
+    value: status,
+    label: STATUS_LABEL[status],
+  })),
+];
+
+const TOPIK_FILTER_OPTIONS = [
+  { value: "", label: "Semua topik" },
+  ...TOPIK_OPTIONS.map((topik) => ({ value: topik, label: topik })),
+];
+
+const ANONIM_FILTER_OPTIONS = [
+  { value: "", label: "Semua" },
+  { value: "ya", label: "Anonim" },
+  { value: "tidak", label: "Pakai nama" },
+];
 
 export default function FilterBar({
   filters,
@@ -14,6 +37,15 @@ export default function FilterBar({
 }) {
   const query = filtersToQuery(filters);
   const hasFilter = query.length > 0;
+  const [status, setStatus] = useState(filters.status ?? "");
+  const [topik, setTopik] = useState(filters.topik ?? "");
+  const [anonim, setAnonim] = useState(filters.anonim ?? "");
+
+  useEffect(() => {
+    setStatus(filters.status ?? "");
+    setTopik(filters.topik ?? "");
+    setAnonim(filters.anonim ?? "");
+  }, [filters.status, filters.topik, filters.anonim]);
 
   return (
     <form className="filters" action="/admin" method="get">
@@ -22,54 +54,42 @@ export default function FilterBar({
           <label className="label" htmlFor="f-status">
             Status
           </label>
-          <select
+          <Select
             id="f-status"
             name="status"
-            className="select"
-            defaultValue={filters.status ?? ""}
-          >
-            <option value="">Semua status</option>
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {STATUS_LABEL[status]}
-              </option>
-            ))}
-          </select>
+            value={status}
+            onChange={setStatus}
+            options={STATUS_FILTER_OPTIONS}
+            ariaLabel="Filter status"
+          />
         </div>
 
         <div className="field">
           <label className="label" htmlFor="f-topik">
             Topik
           </label>
-          <select
+          <Select
             id="f-topik"
             name="topik"
-            className="select"
-            defaultValue={filters.topik ?? ""}
-          >
-            <option value="">Semua topik</option>
-            {TOPIK_OPTIONS.map((topik) => (
-              <option key={topik} value={topik}>
-                {topik}
-              </option>
-            ))}
-          </select>
+            value={topik}
+            onChange={setTopik}
+            options={TOPIK_FILTER_OPTIONS}
+            ariaLabel="Filter topik"
+          />
         </div>
 
         <div className="field">
           <label className="label" htmlFor="f-anonim">
             Anonim
           </label>
-          <select
+          <Select
             id="f-anonim"
             name="anonim"
-            className="select"
-            defaultValue={filters.anonim ?? ""}
-          >
-            <option value="">Semua</option>
-            <option value="ya">Anonim</option>
-            <option value="tidak">Pakai nama</option>
-          </select>
+            value={anonim}
+            onChange={setAnonim}
+            options={ANONIM_FILTER_OPTIONS}
+            ariaLabel="Filter anonim"
+          />
         </div>
 
         <div className="field">

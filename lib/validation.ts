@@ -22,8 +22,8 @@ export function validateSubmit(body: unknown): ValidationResult {
   const isi = typeof raw.isi === "string" ? raw.isi.trim() : "";
   const anonim = raw.anonim !== false;
 
-  if (isi.length < 5) {
-    return { ok: false, error: "Pesan minimal 5 karakter ya." };
+  if (isi.length < 10) {
+    return { ok: false, error: "Pesan minimal 10 karakter ya." };
   }
   if (isi.length > 500) {
     return { ok: false, error: "Pesan maksimal 500 karakter." };

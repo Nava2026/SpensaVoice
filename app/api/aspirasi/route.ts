@@ -6,7 +6,7 @@ import {
 } from "@/lib/sheets";
 import { validateSubmit } from "@/lib/validation";
 import { getClientIp, getDevice } from "@/lib/request-meta";
-import { allowSubmit } from "@/lib/rate-limit";
+import { beginSubmit, cancelSubmit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,15 +14,6 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   try {
     const ip = getClientIp(request.headers);
-    if (!allowSubmit(ip)) {
-      return NextResponse.json(
-        {
-          error:
-            "Kamu udah kirim beberapa pesan barusan. Coba lagi 10 menit lagi ya.",
-        },
-        { status: 429 },
-      );
-    }
 
     const body = await request.json().catch(() => null);
     const result = validateSubmit(body);
@@ -30,13 +21,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
+    const gate = beginSubmit(ip);
+    if (!gate.allowed) {
+      const minutes = Math.max(1, Math.ceil(gate.retryAfterMs / 60000));
+      const wait =
+        minutes >= 60
+          ? `${Math.ceil(minutes / 60)} jam`
+          : `${minutes} menit`;
+      return NextResponse.json(
+        {
+          error: `Kamu baru kirim pesan dari jaringan ini. Coba lagi ${wait} lagi ya.`,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(Math.ceil(gate.retryAfterMs / 1000)) },
+        },
+      );
+    }
+
     const userAgent = request.headers.get("user-agent") ?? "";
-    const item = await createAspirasi({
-      ...result.payload,
-      ip,
-      userAgent,
-      device: getDevice(userAgent),
-    });
+    let item;
+    try {
+      item = await createAspirasi({
+        ...result.payload,
+        ip,
+        userAgent,
+        device: getDevice(userAgent),
+      });
+    } catch (error) {
+      // Jangan hanguskan cooldown kalau penyimpanan ke Sheets gagal.
+      cancelSubmit(ip);
+      throw error;
+    }
 
     return NextResponse.json({ ok: true, kode: item.kode }, { status: 201 });
   } catch (error) {

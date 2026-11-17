@@ -26,7 +26,14 @@ export default async function AdminLayout({
           <Link href="/" className="btn btn-ghost btn-sm">
             Lihat situs
           </Link>
-          {authed && <LogoutButton />}
+          {authed && (
+            <>
+              <Link href="/admin/pengaturan" className="btn btn-ghost btn-sm">
+                Pengaturan
+              </Link>
+              <LogoutButton />
+            </>
+          )}
         </nav>
       </header>
       {children}

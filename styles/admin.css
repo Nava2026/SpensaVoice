@@ -470,3 +470,230 @@
   font-size: 0.8rem;
   margin-top: 0.6rem;
 }
+
+/* ================= Pengaturan OSIS ================= */
+.settings-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.settings-note {
+  max-width: 62ch;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.settings-note strong {
+  color: var(--text);
+}
+
+.settings-success {
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--success);
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.settings-card {
+  padding: 1.1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.settings-card-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.settings-section-fields {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.settings-section-fields .label {
+  margin-top: 0.35rem;
+  font-size: 0.64rem;
+}
+
+.settings-section-fields .input {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+.settings-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.settings-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 32px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.settings-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.settings-remove-section {
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.72rem;
+  color: var(--danger);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.settings-members {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  padding: 0;
+  list-style: none;
+}
+
+.settings-member {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1.2fr) minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settings-member .input {
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.84rem;
+}
+
+.settings-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.72rem;
+}
+
+.settings-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.settings-icon:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.settings-add {
+  min-height: 40px;
+  margin-top: 0.55rem;
+  padding: 0 0.8rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  background: transparent;
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.settings-add:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.settings-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+.settings-add-section {
+  min-height: 42px;
+  padding: 0 1rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  background: transparent;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.settings-add-section:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+@media (max-width: 700px) {
+  .settings-card-head {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .settings-card-side {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .settings-member {
+    grid-template-columns: 32px minmax(0, 1fr) 36px;
+  }
+
+  .settings-member .settings-role-input {
+    grid-column: 2 / 3;
+    grid-row: 2;
+  }
+
+  .settings-member .settings-icon {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}

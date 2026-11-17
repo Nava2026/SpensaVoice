@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { OsisSection } from "./osis";
 import type {
   Aspirasi,
   AspirasiFilters,
@@ -28,7 +29,7 @@ function env(name: string): string {
 
 /** Panggil Web App Apps Script (satu pintu untuk semua baca/tulis sheet). */
 async function callBridge(
-  action: "list" | "create" | "update",
+  action: "list" | "create" | "update" | "getOsis" | "saveOsis",
   payload?: unknown,
 ): Promise<BridgeResponse> {
   const url = env("SHEETS_WEBAPP_URL");
@@ -227,4 +228,65 @@ export async function updateAspirasi(
 
   if (!res.item) throw new Error("Balasan update kosong.");
   return mapItem(res.item);
+}
+
+function number(value: unknown, fallback = 0): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+/** Baris sheet `osis` -> struktur yang dipakai halaman siswa & admin. */
+function mapOsisSections(rows: RawItem[]): OsisSection[] {
+  const parsed = rows
+    .map((raw) => ({
+      bagian: text(raw.bagian),
+      sub: text(raw.sub),
+      grup:
+        raw.grup === true ||
+        ["true", "ya", "1"].includes(text(raw.grup).toLowerCase()),
+      urutan: number(raw.urutan),
+      nama: text(raw.nama),
+      jabatan: text(raw.jabatan),
+      urutanAnggota: number(raw.urutan_anggota),
+    }))
+    .filter((row) => row.bagian)
+    .sort(
+      (a, b) =>
+        a.urutan - b.urutan ||
+        a.urutanAnggota - b.urutanAnggota ||
+        a.nama.localeCompare(b.nama),
+    );
+
+  const sections: OsisSection[] = [];
+  const byName = new Map<string, OsisSection>();
+
+  for (const row of parsed) {
+    let section = byName.get(row.bagian);
+    if (!section) {
+      section = {
+        bagian: row.bagian,
+        sub: row.sub || `Bagian ${row.bagian}`,
+        grup: row.grup,
+        people: [],
+      };
+      byName.set(row.bagian, section);
+      sections.push(section);
+    }
+    if (row.nama) {
+      section.people.push({ nama: row.nama, jabatan: row.jabatan });
+    }
+  }
+
+  return sections;
+}
+
+/** Struktur OSIS dari sheet. Array kosong berarti sheet belum diisi. */
+export async function listOsis(): Promise<OsisSection[]> {
+  const res = await callBridge("getOsis");
+  return mapOsisSections(res.items ?? []);
+}
+
+/** Ganti seluruh isi sheet `osis` dengan struktur dari admin. */
+export async function saveOsis(sections: OsisSection[]): Promise<void> {
+  await callBridge("saveOsis", { sections });
 }

@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Select from "@/components/ui/Select";
 import { STATUS_LABEL, STATUS_OPTIONS } from "@/lib/constants";
 import type { Status } from "@/lib/types";
+
+const STATUS_SELECT_OPTIONS = STATUS_OPTIONS.map((status) => ({
+  value: status,
+  label: STATUS_LABEL[status],
+}));
 
 export default function DetailEditor({
   kode,
@@ -59,21 +65,16 @@ export default function DetailEditor({
         <label className="label" htmlFor="status">
           Status
         </label>
-        <select
+        <Select
           id="status"
-          className="select"
           value={status}
-          onChange={(event) => {
-            setStatus(event.target.value as Status);
+          onChange={(next) => {
+            setStatus(next as Status);
             setSaved(false);
           }}
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {STATUS_LABEL[option]}
-            </option>
-          ))}
-        </select>
+          options={STATUS_SELECT_OPTIONS}
+          ariaLabel="Status aspirasi"
+        />
       </div>
 
       <div className="field" style={{ marginBottom: "0.5rem" }}>

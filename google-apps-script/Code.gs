@@ -33,6 +33,16 @@ const HEADER = [
 ];
 
 const DEFAULT_SHEET_NAME = 'aspirasi';
+const OSIS_SHEET_NAME = 'osis';
+const OSIS_HEADER = [
+  'bagian',
+  'sub',
+  'grup',
+  'urutan',
+  'nama',
+  'jabatan',
+  'urutan_anggota',
+];
 const STATUSES = ['baru', 'diproses', 'selesai', 'ditolak'];
 
 /** Jalankan sekali dari editor Apps Script. */
@@ -57,8 +67,13 @@ function setup(secret) {
     }
   }
 
+  const osisSheet = getOsisSheet_();
+
   Logger.log('SHARED_SECRET: ' + current);
   Logger.log('Sheet aktif: ' + sheet.getName() + ' (baris: ' + sheet.getLastRow() + ')');
+  Logger.log(
+    'Sheet struktur OSIS: ' + osisSheet.getName() + ' (baris: ' + osisSheet.getLastRow() + ')',
+  );
   Logger.log(
     'Lanjut: Deploy > New deployment > Web app > Execute as Me > Who has access Anyone > Deploy, lalu salin URL /exec.',
   );
@@ -88,6 +103,12 @@ function doPost(e) {
     if (body.action === 'update') {
       return json_(updateItem_(body.payload));
     }
+    if (body.action === 'getOsis') {
+      return json_({ ok: true, items: readOsis_() });
+    }
+    if (body.action === 'saveOsis') {
+      return json_(saveOsis_(body.payload));
+    }
 
     throw new Error('Aksi gak dikenal: ' + body.action);
   } catch (err) {
@@ -100,6 +121,16 @@ function getSheet_() {
   const name = props.getProperty('SHEET_NAME') || DEFAULT_SHEET_NAME;
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   return ss.getSheetByName(name) || ss.insertSheet(name);
+}
+
+function getOsisSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(OSIS_SHEET_NAME) || ss.insertSheet(OSIS_SHEET_NAME);
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, OSIS_HEADER.length).setValues([OSIS_HEADER]);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
 }
 
 function withLock_(fn) {
@@ -228,6 +259,75 @@ function updateItem_(payload) {
 
     sheet.getRange(rowNumber, 1, 1, HEADER.length).setValues([values]);
     return { ok: true, item: next };
+  });
+}
+
+function readOsis_() {
+  const sheet = getOsisSheet_();
+  const last = sheet.getLastRow();
+  if (last < 2) return [];
+
+  const values = sheet.getRange(2, 1, last - 1, OSIS_HEADER.length).getValues();
+  const rows = [];
+
+  for (var i = 0; i < values.length; i += 1) {
+    const row = values[i];
+    const item = {};
+    for (var j = 0; j < OSIS_HEADER.length; j += 1) item[OSIS_HEADER[j]] = text_(row[j]);
+    if (item.bagian) rows.push(item);
+  }
+
+  return rows;
+}
+
+function saveOsis_(payload) {
+  return withLock_(function () {
+    const sections = payload && payload.sections;
+    if (!sections || !sections.length) throw new Error('Struktur OSIS kosong.');
+    if (sections.length > 24) throw new Error('Bagian OSIS maksimal 24.');
+
+    const rows = [];
+    for (var s = 0; s < sections.length; s += 1) {
+      const section = sections[s] || {};
+      const people = Array.isArray(section.people) ? section.people : [];
+      if (people.length > 60) throw new Error('Anggota satu bagian maksimal 60.');
+
+      for (var p = 0; p < people.length; p += 1) {
+        const anggota = people[p] || {};
+        rows.push([
+          text_(section.bagian),
+          text_(section.sub),
+          section.grup === true ? 'TRUE' : 'FALSE',
+          s,
+          text_(anggota.nama),
+          text_(anggota.jabatan),
+          p,
+        ]);
+      }
+
+      // Bagian tanpa anggota tetap disimpan sebagai baris penanda supaya
+      // tab kosong tidak hilang setelah disimpan.
+      if (!people.length) {
+        rows.push([
+          text_(section.bagian),
+          text_(section.sub),
+          section.grup === true ? 'TRUE' : 'FALSE',
+          s,
+          '',
+          '',
+          0,
+        ]);
+      }
+    }
+
+    const sheet = getOsisSheet_();
+    sheet.clearContents();
+    sheet.getRange(1, 1, 1, OSIS_HEADER.length).setValues([OSIS_HEADER]);
+    if (rows.length) {
+      sheet.getRange(2, 1, rows.length, OSIS_HEADER.length).setValues(rows);
+    }
+
+    return { ok: true, items: readOsis_() };
   });
 }
 

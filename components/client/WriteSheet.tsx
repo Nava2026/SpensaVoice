@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { KELAS_OPTIONS, TOPIK_OPTIONS } from "@/lib/constants";
+import { useEffect, useRef, useState } from "react";
 import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
+import { KELAS_OPTIONS, TOPIK_OPTIONS } from "@/lib/constants";
 
 export interface WritePayload {
   isi: string;
@@ -13,191 +14,183 @@ export interface WritePayload {
 }
 
 const MAX_ISI = 500;
+const MIN_ISI = 10;
+
+const KELAS_SELECT_OPTIONS = [
+  { value: "", label: "Pilih kelas" },
+  ...KELAS_OPTIONS.map((kelas) => ({ value: kelas, label: kelas })),
+];
+
+const TOPIK_SELECT_OPTIONS = TOPIK_OPTIONS.map((topik) => ({
+  value: topik,
+  label: topik,
+}));
 
 export default function WriteSheet({
   onClose,
   onSubmit,
+  initial,
 }: {
   onClose: () => void;
   onSubmit: (payload: WritePayload) => void;
+  initial?: WritePayload;
 }) {
-  const [isi, setIsi] = useState("");
-  const [nama, setNama] = useState("");
-  const [kelas, setKelas] = useState("");
-  const [topik, setTopik] = useState("");
-  const [anonim, setAnonim] = useState(true);
+  const [isi, setIsi] = useState(initial?.isi ?? "");
+  const [nama, setNama] = useState(initial?.nama ?? "");
+  const [kelas, setKelas] = useState(initial?.kelas ?? "");
+  const [topik, setTopik] = useState(initial?.topik || "Fasilitas");
+  const [anonim, setAnonim] = useState(initial?.anonim ?? true);
   const [error, setError] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const paperRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(
+      () => textareaRef.current?.focus({ preventScroll: true }),
+      500,
+    );
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
     }
     document.addEventListener("keydown", onKeyDown);
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previous;
-    };
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  function handleSubmit() {
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     const trimmed = isi.trim();
-    if (trimmed.length < 5) {
-      setError("Pesan minimal 5 karakter ya.");
+
+    if (trimmed.length < MIN_ISI) {
+      setError(`Pesan minimal ${MIN_ISI} karakter ya.`);
+      paperRef.current?.classList.remove("shake");
+      void paperRef.current?.offsetWidth;
+      paperRef.current?.classList.add("shake");
+      textareaRef.current?.focus();
       return;
     }
     if (trimmed.length > MAX_ISI) {
       setError("Pesan maksimal 500 karakter.");
       return;
     }
+
     setError("");
     onSubmit({
       isi: trimmed,
-      nama: nama.trim(),
+      nama: anonim ? "" : nama.trim(),
       kelas,
       topik,
       anonim,
     });
   }
 
-  const remaining = MAX_ISI - isi.length;
+  const length = isi.length;
+  const enough = length >= MIN_ISI;
 
   return (
-    <div
-      className="sheet-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Tulis pesan"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
-      <div className="paper">
-        <div className="paper-head">
-          <div>
-            <div className="paper-eyebrow">OSIS SMPN 1 DANDER</div>
-            <h2 className="paper-title">Tulis pesan</h2>
-          </div>
-          <button
-            type="button"
-            className="paper-close"
-            onClick={onClose}
-            aria-label="Tutup"
-          >
-            ✕
-          </button>
-        </div>
+    <section className="screen write-screen" aria-label="Tulis pesan">
+      <form className="write-paper" ref={paperRef} onSubmit={handleSubmit} noValidate>
+        <h2 className="write-title">Tulis pesan</h2>
+        <p className="write-hint">Unek-unek, saran, atau keluhan. Bebas, asal sopan ya.</p>
 
-        <div className="field">
-          <label className="label" htmlFor="isi">
-            Isi pesan
+        <div className="write-field">
+          <label className="write-label" htmlFor="isi">
+            Pesanmu
           </label>
           <textarea
             id="isi"
-            className={`textarea${error ? " input-error" : ""}`}
-            placeholder="Tulis ide, keluhan, atau usul kamu di sini..."
-            maxLength={MAX_ISI + 50}
+            ref={textareaRef}
+            className={`ruled${error ? " ruled-error" : ""}`}
+            placeholder="Ceritain di sini..."
+            maxLength={MAX_ISI}
             value={isi}
-            autoFocus
             onChange={(event) => {
               setIsi(event.target.value);
               if (error) setError("");
             }}
           />
-          <div className="counter-row">
-            <span>Minimal 5 karakter</span>
-            <span className={remaining < 0 ? "over" : ""}>
-              {isi.length}/{MAX_ISI}
+          <div className={`write-counter${length >= MAX_ISI ? " over" : ""}`}>
+            <span>{enough ? "sip, udah cukup" : `minimal ${MIN_ISI} huruf`}</span>
+            <span>
+              <b>{length}</b>/{MAX_ISI}
             </span>
           </div>
-          {error && <p className="form-error">{error}</p>}
+          {error && <p className="write-error">{error}</p>}
         </div>
 
-        <div className="paper-toggle">
-          <div>
-            <div className="paper-toggle-label">Kirim anonim</div>
-            <div className="paper-toggle-sub">
-              Nama kamu gak bakal disimpan
-            </div>
-          </div>
-          <button
-            type="button"
-            className={`toggle${anonim ? " on" : ""}`}
-            role="switch"
-            aria-checked={anonim}
-            aria-label="Kirim anonim"
-            onClick={() => setAnonim((value) => !value)}
-          />
-        </div>
-
-        {!anonim && (
-          <div className="field">
-            <label className="label" htmlFor="nama">
-              Nama (boleh kosong)
+        <div className="write-row">
+          <div className="write-field">
+            <label className="write-label" htmlFor="nama">
+              Nama (opsional)
             </label>
             <input
               id="nama"
-              className="input"
-              placeholder="Nama kamu..."
+              className="write-input"
+              placeholder={anonim ? "Anonim" : "Nama kamu"}
+              autoComplete="off"
               maxLength={50}
-              value={nama}
+              disabled={anonim}
+              value={anonim ? "" : nama}
               onChange={(event) => setNama(event.target.value)}
             />
           </div>
-        )}
 
-        <div className="paper-grid">
-          <div className="field">
-            <label className="label" htmlFor="kelas">
-              Kelas
+          <div className="write-field">
+            <label className="write-label" htmlFor="kelas">
+              Kelas (opsional)
             </label>
-            <select
+            <Select
               id="kelas"
-              className="select"
               value={kelas}
-              onChange={(event) => setKelas(event.target.value)}
-            >
-              <option value="">Pilih kelas</option>
-              {KELAS_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="field">
-            <label className="label" htmlFor="topik">
-              Topik
-            </label>
-            <select
-              id="topik"
-              className="select"
-              value={topik}
-              onChange={(event) => setTopik(event.target.value)}
-            >
-              <option value="">Pilih topik</option>
-              {TOPIK_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              onChange={setKelas}
+              options={KELAS_SELECT_OPTIONS}
+              placeholder="Pilih kelas"
+              tone="paper"
+            />
           </div>
         </div>
 
-        <div className="paper-actions">
-          <Button variant="secondary" onClick={onClose}>
+        <div className="write-field">
+          <label className="write-label" htmlFor="topik">
+            Topik
+          </label>
+          <Select
+            id="topik"
+            value={topik}
+            onChange={setTopik}
+            options={TOPIK_SELECT_OPTIONS}
+            ariaLabel="Topik"
+            tone="paper"
+          />
+        </div>
+
+        <label className="anon-toggle">
+          <input
+            type="checkbox"
+            checked={anonim}
+            onChange={(event) => {
+              setAnonim(event.target.checked);
+              if (event.target.checked) setNama("");
+            }}
+          />
+          <span className="anon-switch" aria-hidden="true" />
+          <span>
+            {anonim
+              ? "Anonim, namamu nggak disimpan"
+              : "Namamu ikut dikirim"}
+          </span>
+        </label>
+
+        <div className="write-actions">
+          <Button type="button" variant="ghost" className="paper-plain" onClick={onClose}>
             Batal
           </Button>
-          <Button onClick={handleSubmit}>Kirim pesan</Button>
+          <Button type="submit">Kirim</Button>
         </div>
-
-        <p className="hint" style={{ marginTop: "0.8rem", textAlign: "center" }}>
-          Santai aja, bisa anonim kok 👌
-        </p>
-      </div>
-    </div>
+      </form>
+    </section>
   );
 }
