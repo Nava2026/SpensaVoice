@@ -20,7 +20,9 @@ Repo: https://github.com/Nava2026/SpensaVoice (branch `main`, sudah ter-push).
   Jangan tambah dependensi kalau bisa diselesaikan dengan yang sudah ada.
 - Deploy target: Vercel (atau Node host apa pun). Semua API route memakai `runtime = "nodejs"`.
 - Bahasa UI: Indonesia santai ("kamu", "udah", "gak"), bukan formal. Kode/komentar: Indonesia singkat.
-- Desain dark-first dengan aksen biru, plus "mode kertas" terang; mobile-first untuk siswa.
+- Desain dengan tema gelap/terang (toggle `ThemeToggle`, tersimpan di `localStorage` sebagai
+  `sv_theme`, kunjungan pertama ikut `prefers-color-scheme`), plus "mode kertas" terang untuk
+  form tulis/status; mobile-first untuk siswa.
 
 ## Cara menjalankan
 
@@ -87,6 +89,7 @@ Browser admin ──POST─────> /api/admin/*  ──┤──> lib/shee
 app/(client)/page.tsx                 # halaman siswa
 components/client/                    # StudentApp, Backdrop, Intro, Hero, WriteSheet, SendAnimation,
                                       #   TrackPanel, OsisScreen, Toast, MaskText
+components/ui/ThemeToggle.tsx         # tombol tema terang/gelap (dipakai siswa & admin)
 app/(admin)/layout.tsx                # shell admin (header + logout + link Pengaturan)
 app/(admin)/admin/page.tsx            # login atau dashboard (statistik, filter, daftar)
 app/(admin)/admin/aspirasi/[kode]/    # detail: status, balasan, meta tracking

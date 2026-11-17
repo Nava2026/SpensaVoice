@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { isAdmin } from "@/lib/auth";
 import LogoutButton from "@/components/admin/LogoutButton";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function AdminLayout({
           Spensa<span>Voice</span> <small>Admin</small>
         </Link>
         <nav className="admin-nav">
+          <ThemeToggle />
           <Link href="/" className="btn btn-ghost btn-sm">
             Lihat situs
           </Link>

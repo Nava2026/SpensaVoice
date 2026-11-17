@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { formatDate } from "@/lib/format";
 import type { HistoryItem } from "@/lib/history";
 import MaskText from "./MaskText";
@@ -24,6 +25,10 @@ export default function Hero({
 }: HeroProps) {
   return (
     <section className="screen hero-screen" aria-label="Beranda">
+      <div className="hero-theme">
+        <ThemeToggle />
+      </div>
+
       <div className="hero-inner">
         <span className="eyebrow">OSIS SMPN 1 DANDER</span>
 

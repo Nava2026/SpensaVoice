@@ -1018,3 +1018,94 @@
     right: 2px;
   }
 }
+
+/* ================= Mode terang ================= */
+[data-theme="light"] .osis-members li {
+  border-bottom-color: rgba(16, 26, 44, 0.08);
+  color: #34445e;
+}
+
+[data-theme="light"] .osis-members li.is-featured {
+  border-bottom-color: rgba(37, 99, 235, 0.24);
+  background: linear-gradient(
+    90deg,
+    rgba(37, 99, 235, 0.08),
+    rgba(37, 99, 235, 0.02) 65%,
+    transparent
+  );
+}
+
+[data-theme="light"] .osis-members li.is-featured .osis-member-name {
+  color: #0f1b2e;
+}
+
+[data-theme="light"] .osis-avatar {
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="light"] .osis-members li.is-featured .osis-avatar,
+[data-theme="light"] .osis-person-feature.is-featured .osis-avatar {
+  border-color: rgba(37, 99, 235, 0.42);
+  background: rgba(37, 99, 235, 0.14);
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.06),
+    0 0 14px rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+[data-theme="light"] .osis-person-feature.is-featured {
+  background: linear-gradient(
+    90deg,
+    rgba(37, 99, 235, 0.08),
+    rgba(37, 99, 235, 0.02) 70%,
+    transparent
+  );
+}
+
+[data-theme="light"] .osis-nav {
+  border-left-color: rgba(16, 26, 44, 0.1);
+}
+
+[data-theme="light"] .osis-group-label {
+  color: rgba(82, 97, 122, 0.65);
+}
+
+[data-theme="light"] .toast {
+  border-color: rgba(21, 128, 61, 0.26);
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 24px 60px -20px rgba(15, 23, 42, 0.28);
+  color: var(--ink);
+}
+
+[data-theme="light"] .toast-error {
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="light"] .toast-code-error {
+  color: #b91c1c;
+}
+
+[data-theme="light"] .toast-actions button,
+[data-theme="light"] .toast-cta {
+  border-color: rgba(16, 26, 44, 0.18);
+  background: rgba(16, 26, 44, 0.04);
+  color: var(--ink);
+}
+
+[data-theme="light"] .toast-actions button:hover,
+[data-theme="light"] .toast-cta:hover {
+  border-color: rgba(16, 26, 44, 0.3);
+  background: rgba(16, 26, 44, 0.08);
+}
+
+[data-theme="light"] .toast-cta {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+[data-theme="light"] .toast-cta:hover {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+}

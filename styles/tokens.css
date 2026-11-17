@@ -35,6 +35,40 @@
   color-scheme: dark;
 }
 
+/* Mode terang untuk seluruh app. */
+[data-theme="light"] {
+  --bg: #f4f7fb;
+  --bg-card: #ffffff;
+  --bg-soft: #e9eff8;
+  --bg-hover: #dfe8f4;
+
+  --border: #dbe4f0;
+  --border-strong: #c3d0e2;
+
+  --text: #101a2c;
+  --text-secondary: #52617a;
+  --text-muted: #7b8aa3;
+
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-soft: rgba(37, 99, 235, 0.12);
+  --primary-soft-2: rgba(37, 99, 235, 0.06);
+
+  --success: #15803d;
+  --success-soft: rgba(21, 128, 61, 0.1);
+  --warning: #b45309;
+  --warning-soft: rgba(180, 83, 9, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  --info: #0369a1;
+  --info-soft: rgba(3, 105, 161, 0.1);
+
+  --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 1px 4px rgba(15, 23, 42, 0.06);
+
+  color-scheme: light;
+}
+
 /* Mode kertas: terang, dipakai saat menulis pesan. */
 [data-theme="paper"] {
   --bg: #f7f9fc;

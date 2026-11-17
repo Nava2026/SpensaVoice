@@ -19,12 +19,24 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Pasang tema sebelum paint supaya nggak ada kedipan terang/gelap.
+const themeInit = `(function () {
+  try {
+    var saved = localStorage.getItem("sv_theme");
+    var theme = saved === "light" || saved === "dark"
+      ? saved
+      : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (error) {}
+})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" data-theme="dark">
+    <html lang="id" data-theme="dark" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

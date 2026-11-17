@@ -27,7 +27,7 @@ app/
 components/
   client/                        # layar sisi siswa (intro, hero, tulis, status, OSIS)
   admin/                         # komponen dashboard + editor OSIS
-  ui/                            # Button + ripple, Select custom
+  ui/                            # Button + ripple, Select custom, ThemeToggle
 google-apps-script/Code.gs       # script yang ditempel ke spreadsheet
 lib/
   sheets.ts                      # panggil Web App Apps Script (aspirasi + OSIS)
@@ -99,7 +99,7 @@ Import repo, tambahkan keempat env variable di atas ke project Vercel, deploy. T
 
 ## Alur
 
-**Siswa** — intro animasi → hero → tulis pesan di mode kertas → kirim (animasi kotak) → toast berisi kode `SV-XXXX` (bisa disalin) → cek status kapan saja lewat kode. Layar **Kenalan sama OSIS** menampilkan struktur pengurus dari sheet `osis`. Kode yang pernah didapat otomatis disimpan di `localStorage` browser dan muncul sebagai riwayat di hero + layar status.
+**Siswa** — intro animasi → hero → tulis pesan di mode kertas → kirim (animasi kotak) → toast berisi kode `SV-XXXX` (bisa disalin) → cek status kapan saja lewat kode. Layar **Kenalan sama OSIS** menampilkan struktur pengurus dari sheet `osis`. Kode yang pernah didapat otomatis disimpan di `localStorage` browser dan muncul sebagai riwayat di hero + layar status. Tombol **Tema** di kanan atas (dan di header admin) mengganti mode terang/gelap; pilihan tersimpan di browser, sedangkan kunjungan pertama mengikuti preferensi sistem.
 
 **Admin** — buka `/admin`, masuk pakai `ADMIN_PASSWORD`, lihat statistik & daftar, filter (status, topik, tanggal, anonim, keyword), klik kartu untuk detail, ubah status + tulis balasan, export CSV. Di halaman detail ada tombol **Hapus aspirasi** dengan dialog konfirmasi; kalau disetujui, baris itu dihapus permanen dari sheet. Menu **Pengaturan** dipakai mengubah bagian, nama, dan jabatan anggota OSIS; simpan langsung menulis ulang sheet `osis`.
 
