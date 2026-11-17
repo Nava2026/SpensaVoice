@@ -72,7 +72,8 @@ Browser admin ──POST─────> /api/admin/*  ──┤──> lib/shee
 
 - `lib/sheets.ts` adalah satu-satunya pintu ke Sheets. UI dan route lain tidak boleh `fetch` langsung.
 - Apps Script menerima `{ secret, action, payload }` dengan `action` = `list` | `create` | `update` |
-  `getOsis` | `saveOsis`, dan membalas `{ ok: true, items | item }` atau `{ ok: false, error }`.
+  `delete` | `getOsis` | `saveOsis`, dan membalas `{ ok: true, items | item }` atau
+  `{ ok: false, error }`. `delete` menerima `{ kode }` dan menghapus satu baris aspirasi.
 - Struktur OSIS dibaca/tulis seluruhnya: `saveOsis` menghapus isi sheet `osis` lalu menulis ulang
   semua baris. Jangan simpan sebagian.
 - Kode tracking dibuat di **Next.js** (`lib/sheets.ts`), bukan di Apps Script: alfabet
@@ -96,7 +97,7 @@ app/api/aspirasi/route.ts             # POST submit publik, GET cek status by ko
 app/api/osis/route.ts                 # GET struktur OSIS publik (fallback default)
 app/api/admin/login|logout/route.ts   # sesi admin
 app/api/admin/aspirasi/route.ts       # GET daftar + statistik
-app/api/admin/aspirasi/[kode]/route.ts# GET detail, PATCH status/balasan
+app/api/admin/aspirasi/[kode]/route.ts# GET detail, PATCH status/balasan, DELETE hapus
 app/api/admin/osis/route.ts           # GET & PUT struktur OSIS (auth + validasi)
 app/api/admin/export/route.ts         # CSV sesuai filter
 lib/sheets.ts                         # bridge + mapping + filter + create/update + OSIS

@@ -451,6 +451,94 @@
   margin-top: 1rem;
 }
 
+.btn-danger {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.22);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* Konfirmasi hapus */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(2, 6, 23, 0.74);
+  backdrop-filter: blur(5px);
+  animation: modal-fade 0.18s ease both;
+}
+
+.modal-card {
+  width: min(430px, 100%);
+  padding: 1.4rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  background: var(--bg-card);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
+  animation: modal-rise 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.modal-eyebrow {
+  margin-bottom: 0.35rem;
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.56rem;
+  letter-spacing: 1.4px;
+  color: var(--danger);
+  text-transform: uppercase;
+}
+
+.modal-title {
+  font-family: "Minecrafter", "Inter", cursive;
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.modal-text {
+  margin-top: 0.55rem;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-top: 1.2rem;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop,
+  .modal-card {
+    animation: none;
+  }
+}
+
 .back-link {
   display: inline-flex;
   align-items: center;

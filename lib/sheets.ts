@@ -29,7 +29,7 @@ function env(name: string): string {
 
 /** Panggil Web App Apps Script (satu pintu untuk semua baca/tulis sheet). */
 async function callBridge(
-  action: "list" | "create" | "update" | "getOsis" | "saveOsis",
+  action: "list" | "create" | "update" | "delete" | "getOsis" | "saveOsis",
   payload?: unknown,
 ): Promise<BridgeResponse> {
   const url = env("SHEETS_WEBAPP_URL");
@@ -228,6 +228,14 @@ export async function updateAspirasi(
 
   if (!res.item) throw new Error("Balasan update kosong.");
   return mapItem(res.item);
+}
+
+/** Hapus satu aspirasi dari sheet berdasarkan kode. */
+export async function deleteAspirasi(kode: string): Promise<string> {
+  const normalized = kode.trim().toUpperCase();
+  if (!normalized) throw new Error("Kode aspirasi kosong.");
+  await callBridge("delete", { kode: normalized });
+  return normalized;
 }
 
 function number(value: unknown, fallback = 0): number {

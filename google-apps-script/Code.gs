@@ -103,6 +103,9 @@ function doPost(e) {
     if (body.action === 'update') {
       return json_(updateItem_(body.payload));
     }
+    if (body.action === 'delete') {
+      return json_(deleteItem_(body.payload));
+    }
     if (body.action === 'getOsis') {
       return json_({ ok: true, items: readOsis_() });
     }
@@ -259,6 +262,30 @@ function updateItem_(payload) {
 
     sheet.getRange(rowNumber, 1, 1, HEADER.length).setValues([values]);
     return { ok: true, item: next };
+  });
+}
+
+function deleteItem_(payload) {
+  return withLock_(function () {
+    if (!payload || !payload.kode) throw new Error('Kode aspirasi kosong.');
+
+    const sheet = getSheet_();
+    const last = sheet.getLastRow();
+    if (last < 2) return { ok: false, error: 'Kode aspirasi gak ketemu.' };
+
+    const kode = String(payload.kode).trim().toUpperCase();
+    const kodes = sheet.getRange(2, 2, last - 1, 1).getValues();
+    let rowNumber = 0;
+    for (var i = 0; i < kodes.length; i += 1) {
+      if (String(kodes[i][0]).trim().toUpperCase() === kode) {
+        rowNumber = i + 2;
+        break;
+      }
+    }
+    if (!rowNumber) return { ok: false, error: 'Kode aspirasi gak ketemu.' };
+
+    sheet.deleteRow(rowNumber);
+    return { ok: true, kode: kode };
   });
 }
 

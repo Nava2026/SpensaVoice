@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/auth";
-import { getAspirasiByKode, updateAspirasi } from "@/lib/sheets";
+import {
+  deleteAspirasi,
+  getAspirasiByKode,
+  updateAspirasi,
+} from "@/lib/sheets";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import type { Status } from "@/lib/types";
 
@@ -30,6 +34,29 @@ export async function GET(_request: Request, context: Context) {
       { error: "Gagal ambil detail aspirasi." },
       { status: 500 },
     );
+  }
+}
+
+export async function DELETE(_request: Request, context: Context) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Belum login." }, { status: 401 });
+  }
+
+  const { kode } = await context.params;
+  const normalized = kode.trim().toUpperCase();
+  if (!/^SV-[A-Z0-9]+$/.test(normalized)) {
+    return NextResponse.json({ error: "Kode aspirasi gak valid." }, { status: 400 });
+  }
+
+  try {
+    await deleteAspirasi(normalized);
+    return NextResponse.json({ ok: true, kode: normalized });
+  } catch (error) {
+    console.error("[adminDelete]", error);
+    const message =
+      error instanceof Error ? error.message : "Gagal hapus aspirasi.";
+    const status = message.includes("gak ketemu") ? 404 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 

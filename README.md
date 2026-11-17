@@ -21,7 +21,7 @@ app/
   api/aspirasi/                  # POST submit (public), GET cek status by kode
   api/osis/                      # GET struktur OSIS untuk siswa
   api/admin/login|logout/        # sesi admin
-  api/admin/aspirasi/            # list & detail/update admin
+  api/admin/aspirasi/            # list, detail, update & hapus aspirasi admin
   api/admin/osis/                # GET & PUT struktur OSIS
   api/admin/export/              # export CSV sesuai filter
 components/
@@ -101,7 +101,7 @@ Import repo, tambahkan keempat env variable di atas ke project Vercel, deploy. T
 
 **Siswa** — intro animasi → hero → tulis pesan di mode kertas → kirim (animasi kotak) → toast berisi kode `SV-XXXX` (bisa disalin) → cek status kapan saja lewat kode. Layar **Kenalan sama OSIS** menampilkan struktur pengurus dari sheet `osis`. Kode yang pernah didapat otomatis disimpan di `localStorage` browser dan muncul sebagai riwayat di hero + layar status.
 
-**Admin** — buka `/admin`, masuk pakai `ADMIN_PASSWORD`, lihat statistik & daftar, filter (status, topik, tanggal, anonim, keyword), klik kartu untuk detail, ubah status + tulis balasan, export CSV. Menu **Pengaturan** dipakai mengubah bagian, nama, dan jabatan anggota OSIS; simpan langsung menulis ulang sheet `osis`.
+**Admin** — buka `/admin`, masuk pakai `ADMIN_PASSWORD`, lihat statistik & daftar, filter (status, topik, tanggal, anonim, keyword), klik kartu untuk detail, ubah status + tulis balasan, export CSV. Di halaman detail ada tombol **Hapus aspirasi** dengan dialog konfirmasi; kalau disetujui, baris itu dihapus permanen dari sheet. Menu **Pengaturan** dipakai mengubah bagian, nama, dan jabatan anggota OSIS; simpan langsung menulis ulang sheet `osis`.
 
 ## Catatan
 

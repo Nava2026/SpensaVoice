@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import DeleteAspirasiButton from "@/components/admin/DeleteAspirasiButton";
 import DetailEditor from "@/components/admin/DetailEditor";
 import SetupNotice from "@/components/admin/SetupNotice";
 import { isAdmin } from "@/lib/auth";
@@ -75,6 +76,10 @@ export default async function AspirasiDetailPage({
               </div>
 
               <div className="detail-isi">{item.isi}</div>
+
+              <div className="detail-actions">
+                <DeleteAspirasiButton kode={item.kode} />
+              </div>
             </section>
 
             <section className="detail-panel">
