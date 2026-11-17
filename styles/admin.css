@@ -1,0 +1,472 @@
+/* ================= Admin shell ================= */
+.admin-shell {
+  min-height: 100dvh;
+  background:
+    radial-gradient(55% 35% at 15% 0%, rgba(96, 165, 250, 0.12), transparent 70%),
+    var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  background: rgba(11, 18, 32, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+[data-theme="paper"] .admin-topbar {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.admin-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: "Minecrafter", "Inter", cursive;
+  font-size: 1.2rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+.admin-brand:hover {
+  text-decoration: none;
+}
+
+.admin-brand span {
+  color: var(--primary);
+}
+
+.admin-brand small {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.admin-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 4rem;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-eyebrow {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.page-title {
+  font-family: "Minecrafter", "Inter", cursive;
+  font-size: 1.7rem;
+  letter-spacing: 0.5px;
+}
+
+.page-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* ================= Login ================= */
+.login-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.login-card {
+  width: min(400px, 100%);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 1.75rem;
+  animation: fade-up 0.4s ease both;
+}
+
+.login-eyebrow {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  color: var(--primary);
+  margin-bottom: 0.4rem;
+}
+
+.login-title {
+  font-family: "Minecrafter", "Inter", cursive;
+  font-size: 1.55rem;
+  margin-bottom: 0.35rem;
+}
+
+.login-desc {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-foot {
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ================= Stats ================= */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-label {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-family: "Minecrafter", "Inter", cursive;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  margin: 0.2rem 0;
+}
+
+.stat-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* ================= Filters ================= */
+.filters {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.25rem;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.filter-grid .field {
+  margin-bottom: 0;
+}
+
+.filter-grid .field-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 800px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filter-grid .field-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+  .filter-grid .field-wide {
+    grid-column: span 1;
+  }
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.filter-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ================= List ================= */
+.list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+}
+
+@media (max-width: 780px) {
+  .list-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.signal-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, transform 0.15s, background 0.15s;
+}
+
+.signal-card:hover {
+  text-decoration: none;
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  transform: translateY(-2px);
+}
+
+.signal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.signal-code {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.signal-meta {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.signal-body {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.signal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+}
+
+.tag {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.4px;
+  padding: 0.22rem 0.5rem;
+  border-radius: 6px;
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+}
+
+.tag-anon {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.tag-device {
+  margin-left: auto;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+/* ================= Detail ================= */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1rem;
+}
+
+.detail-panel:last-child {
+  margin-bottom: 0;
+}
+
+.panel-title {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.9rem;
+}
+
+.detail-code {
+  font-family: "Minecrafter", "Inter", cursive;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.detail-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+  margin-bottom: 1rem;
+}
+
+.detail-isi {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.kv dt {
+  color: var(--text-muted);
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding-top: 3px;
+}
+
+.kv dd {
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.meta-row {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.meta-row:last-child {
+  border-bottom: none;
+}
+
+.meta-key {
+  font-family: "Minecraft Ten", "Inter", monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.back-link:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.saved-note {
+  color: var(--success);
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+}
